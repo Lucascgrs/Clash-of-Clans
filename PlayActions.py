@@ -191,6 +191,9 @@ class OCR:
         self.get_nb_free_workers()
         self.get_gold_and_elexir()
 
+        if self.nb_ouvriers == 0:
+            return
+
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\clicinfoouvriers.json").rejouer()
         time.sleep(1)
@@ -198,16 +201,20 @@ class OCR:
         cpt = 1
         last = True
         loop = 40
+        zone = None
         while cpt <= loop or last:
 
             if cpt > loop:
-                try:
-                    self.liste_ameliorations = self.capture_et_ocr(self.dict_zones[f'zm{cpt-loop}'], "amelioration" + str(cpt)).split('//')
-                except:
-                    last = False
-                    break
+                zone = self.dict_zones[f'zm{cpt-loop}']
             else:
-                self.liste_ameliorations = self.capture_et_ocr(self.zone_ameliorations, "amelioration" + str(cpt)).split('//')
+                zone = self.zone_ameliorations
+                LecteurPosition(fichier_entree=path_actions + "\\infoouvriersuivant.json").rejouer()
+
+            try:
+                self.liste_ameliorations = self.capture_et_ocr(zone).split('//')
+            except:
+                last = False
+                break
 
             for amelioration in self.liste_ameliorations:
                 ameliorationsplit = re.sub(r'[^a-zA-Z0-9 ]', '', amelioration).split(' ')
@@ -218,28 +225,55 @@ class OCR:
                         prix = str(ameliorationsplit[i]) + prix
                     else:
                         nom = ameliorationsplit[i] + nom
+                try:
+                    prix = int(prix)
+                except:
+                    prix = 0
+
                 self.dict_ameliorations[nom] = prix
 
-            LecteurPosition(fichier_entree=path_actions + "\\infoouvriersuivant.json").rejouer()
+                if 'rempart' in nom.lower():
+                    if prix > self.gold and prix > self.elexir:
+                        print('Rempart trop cher : ', prix)
+
+                    else:
+                        clic_coord = (zone[0] + 50, (zone[1] * 2 + zone[3]) // 2)
+                        pyautogui.click(clic_coord[0], clic_coord[1])
+                        nb_remparts_a_ameliorer_gold = self.gold // prix
+                        nb_remparts_a_ameliorer_elexir = self.elexir // prix
+                        print("remparts à améliorer : ", nb_remparts_a_ameliorer_gold + nb_remparts_a_ameliorer_elexir)
+
+                        if nb_remparts_a_ameliorer_gold > 0:
+                            LecteurPosition(fichier_entree=path_actions + "\\ameliorerplus.json").rejouer()
+                            for r in range(1, nb_remparts_a_ameliorer_gold):
+                                LecteurPosition(fichier_entree=path_actions + "\\ajouterrempart.json").rejouer()
+                            LecteurPosition(fichier_entree=path_actions + "\\ameliorerrempartgold.json").rejouer()
+                            LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
+
+                        if nb_remparts_a_ameliorer_elexir > 0:
+                            LecteurPosition(fichier_entree=path_actions + "\\ameliorerplus.json").rejouer()
+                            for r in range(1, nb_remparts_a_ameliorer_elexir):
+                                LecteurPosition(fichier_entree=path_actions + "\\ajouterrempart.json").rejouer()
+                            LecteurPosition(fichier_entree=path_actions + "\\ameliorerrempartelexir.json").rejouer()
+                            LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
+
+                        return
+
             cpt += 1
 
-        print(self.dict_ameliorations)
+            print(self.dict_ameliorations)
 
 
 if __name__ == "__main__":
-    time.sleep(2)
-    ocr = OCR()
-    ocr.lire_infos()
 
-    '''
-    for k in range(1):
+    for k in range(2):
 
         LecteurPosition(fichier_entree=path_actions + "\\switchptitlulu.json").rejouer()
         time.sleep(3)
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\selectfirstarmy.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-        time.sleep(1)
+        time.sleep(10)
         for i in range(0):
             LecteurPosition(fichier_entree=path_actions + "\\lose.json").rejouer()
             time.sleep(3)
@@ -248,6 +282,8 @@ if __name__ == "__main__":
             LecteurPosition(fichier_entree=path_actions + "\\attaqueptitlulu.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
+
+        OCR().upgrade_wall()
 
         # ----------------------------------------------------
 
@@ -266,11 +302,32 @@ if __name__ == "__main__":
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
 
-        LecteurPosition(fichier_entree=path_actions + "\\selectsecondarmy.json").rejouer()"""
+        LecteurPosition(fichier_entree=path_actions + "\\selectsecondarmy.json").rejouer()
+        
+        OCR().upgrade_wall()"""
 
         # ----------------------------------------------------
 
         LecteurPosition(fichier_entree=path_actions + "\\switchciteor.json").rejouer()
+        time.sleep(3)
+        LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
+        LecteurPosition(fichier_entree=path_actions + "\\selectfirstarmy.json").rejouer()
+        LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
+        time.sleep(1)
+        for i in range(5):
+            LecteurPosition(fichier_entree=path_actions + "\\lose.json").rejouer()
+            time.sleep(3)
+            LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
+        for i in range(15):
+            LecteurPosition(fichier_entree=path_actions + "\\attaqueciteor.json").rejouer()
+            time.sleep(3)
+            LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
+
+        OCR().upgrade_wall()
+
+        # ----------------------------------------------------
+
+        LecteurPosition(fichier_entree=path_actions + "\\switch_lucas_.json").rejouer()
         time.sleep(3)
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\selectfirstarmy.json").rejouer()
@@ -281,23 +338,8 @@ if __name__ == "__main__":
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         for i in range(15):
-            LecteurPosition(fichier_entree=path_actions + "\\attaqueciteor.json").rejouer()
-            time.sleep(3)
-            LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-
-        # ----------------------------------------------------
-
-        LecteurPosition(fichier_entree=path_actions + "\\switch_lucas_.json").rejouer()
-        time.sleep(3)
-        LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-        LecteurPosition(fichier_entree=path_actions + "\\selectfirstarmy.json").rejouer()
-        LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-        time.sleep(1)
-        for i in range(1):
-            LecteurPosition(fichier_entree=path_actions + "\\lose.json").rejouer()
-            time.sleep(3)
-            LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-        for i in range(10):
             LecteurPosition(fichier_entree=path_actions + "\\attaque_lucas_.json").rejouer()
             time.sleep(3)
-            LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()'''
+            LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
+
+        OCR().upgrade_wall()
