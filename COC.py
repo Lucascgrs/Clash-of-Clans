@@ -24,7 +24,7 @@ from pathlib import Path
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 sys.stdout.reconfigure(encoding='utf-8')
 
-API_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjQ2NWRlMWQ1LTA1ZWUtNDg4My05YjExLTdiZDZhZTIxM2ZmYiIsImlhdCI6MTc0NjgwMDI5Niwic3ViIjoiZGV2ZWxvcGVyLzUwNzVhOTk1LTI5NWUtNTZiMS0yZTQ2LWY0YmMyNTgxN2QwMyIsInNjb3BlcyI6WyJjbGFzaCJdLCJsaW1pdHMiOlt7InRpZXIiOiJkZXZlbG9wZXIvc2lsdmVyIiwidHlwZSI6InRocm90dGxpbmcifSx7ImNpZHJzIjpbIjkyLjE2Ny45MC4yOSJdLCJ0eXBlIjoiY2xpZW50In1dfQ.nLGvrVH2i-dj2WZUlmp-8_hIUVWgIaTCGChOMKAcwWjytsKc-DrKIbcHwV598O42OsFLZod1uWEi6BMb264b0w"
+API_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6Ijg0Yjk0Y2Y4LWQ5OTQtNDBlZi1iOTA0LTRiZDdmNWNiYjZmMCIsImlhdCI6MTc1NjM1MjE5OSwic3ViIjoiZGV2ZWxvcGVyLzUwNzVhOTk1LTI5NWUtNTZiMS0yZTQ2LWY0YmMyNTgxN2QwMyIsInNjb3BlcyI6WyJjbGFzaCJdLCJsaW1pdHMiOlt7InRpZXIiOiJkZXZlbG9wZXIvc2lsdmVyIiwidHlwZSI6InRocm90dGxpbmcifSx7ImNpZHJzIjpbIjkyLjE4NC4xMDYuMTc2Il0sInR5cGUiOiJjbGllbnQifV19.gy2p-RYZPehkdzH2kugY2EC-KMTMaaRVldesjLjwhwQzoqdTQVYcs9LOLrZhq1cKXeq9hGOlJLRkmtes36RLqw"
 HEADERS = {
     "Authorization": f"Bearer {API_TOKEN}",
     "Accept": "application/json"
@@ -96,7 +96,7 @@ def get_clan_members(clan_tag, token, condition=True):
             trophies = member.get('trophies', 0)
             player_info = {}
 
-            if 2400 <= trophies <= 5000 and rank != 'Unranked' and int(member.get('townHallLevel', 'N/A')) >= 12 and (member['donations'] > 0 or member['donationsReceived'] > 0) and condition:
+            if 2700 <= trophies <= 5000 and rank != 'Unranked' and int(member.get('townHallLevel', 'N/A')) >= 13 and (member['donations'] > 0 or member['donationsReceived'] > 0) and condition:
                 player_info = {
                     "name": member['name'],
                     "role": member['role'],
@@ -323,5 +323,5 @@ def spy_my_clan(clan_tag='#2R2YVCLJQ'):
     plot_trophies_evolution("EPF_Players.xlsx", players_to_plot=["P’tit Lulu", "shamim™", "FrysT"])
 
 
-invite(100, 50, inviting=True, condition=True)
+invite(200, 50, inviting=True, condition=True)
 spy_my_clan()

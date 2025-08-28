@@ -137,26 +137,29 @@ class OCR:
         if not hasattr(self, 'dxcam_camera'):
             self.dxcam_camera = dxcam.create()
 
+        # Initialize EasyOCR if not already done
+        if not hasattr(self, 'reader'):
+            import easyocr
+            self.reader = easyocr.Reader(['fr', 'en'])  # Spécifiez les langues dont vous avez besoin
+
         # DXcam expects region as (left, top, right, bottom)
-        # Convert from pyautogui format (left, top, width, height)
         left, top, width, height = region
         dxcam_region = (left, top, left + width, top + height)
 
         # Capture screenshot using dxcam
         screenshot = self.dxcam_camera.grab(region=dxcam_region)
 
+        # Prétraitement optionnel (vous pouvez garder votre traitement ou l'ajuster)
         gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
-
-        # Apply threshold
         _, thresh = cv2.threshold(gray, 230, 255, cv2.THRESH_BINARY)
 
         # Save if title is provided
         if title:
             cv2.imwrite(path + '\\' + title + ".png", thresh)
 
-        # OCR
-        custom_config = r'--oem 3 --psm 6'
-        text = pytesseract.image_to_string(thresh, config=custom_config).strip()
+        # OCR avec EasyOCR
+        results = self.reader.readtext(thresh)
+        text = ' '.join([result[1] for result in results])
         text = re.sub(r'\n+', '//', text)
 
         return text
@@ -168,6 +171,7 @@ class OCR:
                 self.nb_ouvriers = s.split('/')[0]
             else:
                 self.nb_ouvriers = s[0]
+            self.nb_ouvriers = self.nb_ouvriers.replace('S', '5')
         except:
             self.nb_ouvriers = 0
 
@@ -217,6 +221,7 @@ class OCR:
                 break
 
             for amelioration in self.liste_ameliorations:
+                amelioration = amelioration.replace('o', '0').replace('O', '0')
                 ameliorationsplit = re.sub(r'[^a-zA-Z0-9 ]', '', amelioration).split(' ')
                 prix = ''
                 nom = ''
@@ -237,6 +242,7 @@ class OCR:
                         print('Rempart trop cher : ', prix)
 
                     else:
+                        print("Prix pour 1 rempart : ", prix)
                         clic_coord = (zone[0] + 50, (zone[1] * 2 + zone[3]) // 2)
                         pyautogui.click(clic_coord[0], clic_coord[1])
                         nb_remparts_a_ameliorer_gold = self.gold // prix
@@ -249,6 +255,8 @@ class OCR:
                                 LecteurPosition(fichier_entree=path_actions + "\\ajouterrempart.json").rejouer()
                             LecteurPosition(fichier_entree=path_actions + "\\ameliorerrempartgold.json").rejouer()
                             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
+                            if nb_remparts_a_ameliorer_elexir > 0:
+                                self.upgrade_wall()
 
                         if nb_remparts_a_ameliorer_elexir > 0:
                             LecteurPosition(fichier_entree=path_actions + "\\ameliorerplus.json").rejouer()
@@ -273,13 +281,13 @@ if __name__ == "__main__":
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\selectfirstarmy.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-        time.sleep(10)
-        for i in range(0):
+        time.sleep(1)
+        for i in range(5):
             LecteurPosition(fichier_entree=path_actions + "\\lose.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         for i in range(20):
-            LecteurPosition(fichier_entree=path_actions + "\\attaqueptitlulu.json").rejouer()
+            LecteurPosition(fichier_entree=path_actions + "\\attaquehdv13+4heros.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
 
@@ -298,7 +306,7 @@ if __name__ == "__main__":
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         for i in range(25):
-            LecteurPosition(fichier_entree=path_actions + "\\attaquetilu.json").rejouer()
+            LecteurPosition(fichier_entree=path_actions + "\\attaquehdv13+4heros.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
 
@@ -318,7 +326,7 @@ if __name__ == "__main__":
             LecteurPosition(fichier_entree=path_actions + "\\lose.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-        for i in range(15):
+        for i in range(20):
             LecteurPosition(fichier_entree=path_actions + "\\attaqueciteor.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
@@ -333,7 +341,7 @@ if __name__ == "__main__":
         LecteurPosition(fichier_entree=path_actions + "\\selectfirstarmy.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         time.sleep(1)
-        for i in range(3):
+        for i in range(4):
             LecteurPosition(fichier_entree=path_actions + "\\lose.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
