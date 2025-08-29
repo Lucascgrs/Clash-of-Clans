@@ -209,16 +209,16 @@ class OCR:
         while cpt <= loop or last:
 
             if cpt > loop:
-                zone = self.dict_zones[f'zm{cpt-loop}']
+                try:
+                    zone = self.dict_zones[f'zm{cpt-loop}']
+                except:
+                    last = False
+                    break
             else:
                 zone = self.zone_ameliorations
                 LecteurPosition(fichier_entree=path_actions + "\\infoouvriersuivant.json").rejouer()
 
-            try:
-                self.liste_ameliorations = self.capture_et_ocr(zone).split('//')
-            except:
-                last = False
-                break
+            self.liste_ameliorations = self.capture_et_ocr(zone).split('//')
 
             for amelioration in self.liste_ameliorations:
                 amelioration = amelioration.replace('o', '0').replace('O', '0')
@@ -272,9 +272,8 @@ class OCR:
             print(self.dict_ameliorations)
 
 
-if __name__ == "__main__":
-
-    for k in range(2):
+def attaque_with_all_accounts(defaites=6, attaques=20):
+    for k in range(1):
 
         LecteurPosition(fichier_entree=path_actions + "\\switchptitlulu.json").rejouer()
         time.sleep(3)
@@ -282,37 +281,37 @@ if __name__ == "__main__":
         LecteurPosition(fichier_entree=path_actions + "\\selectfirstarmy.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         time.sleep(1)
-        for i in range(5):
+        for i in range(defaites):
             LecteurPosition(fichier_entree=path_actions + "\\lose.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-        for i in range(20):
+        for i in range(attaques):
             LecteurPosition(fichier_entree=path_actions + "\\attaquehdv13+4heros.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
 
-        OCR().upgrade_wall()
+        # OCR().upgrade_wall()
 
         # ----------------------------------------------------
 
-        """LecteurPosition(fichier_entree=path_actions + "\\switchtilu.json").rejouer()
+        LecteurPosition(fichier_entree=path_actions + "\\switchtilu.json").rejouer()
         time.sleep(3)
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\selectfirstarmy.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         time.sleep(1)
-        for i in range(8):
+        for i in range(defaites):
             LecteurPosition(fichier_entree=path_actions + "\\lose.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-        for i in range(25):
+        for i in range(attaques):
             LecteurPosition(fichier_entree=path_actions + "\\attaquehdv13+4heros.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
 
         LecteurPosition(fichier_entree=path_actions + "\\selectsecondarmy.json").rejouer()
-        
-        OCR().upgrade_wall()"""
+
+        # OCR().upgrade_wall()
 
         # ----------------------------------------------------
 
@@ -322,16 +321,16 @@ if __name__ == "__main__":
         LecteurPosition(fichier_entree=path_actions + "\\selectfirstarmy.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         time.sleep(1)
-        for i in range(5):
+        for i in range(defaites):
             LecteurPosition(fichier_entree=path_actions + "\\lose.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-        for i in range(20):
+        for i in range(attaques):
             LecteurPosition(fichier_entree=path_actions + "\\attaqueciteor.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
 
-        OCR().upgrade_wall()
+        # OCR().upgrade_wall()
 
         # ----------------------------------------------------
 
@@ -341,13 +340,13 @@ if __name__ == "__main__":
         LecteurPosition(fichier_entree=path_actions + "\\selectfirstarmy.json").rejouer()
         LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
         time.sleep(1)
-        for i in range(4):
+        for i in range(defaites):
             LecteurPosition(fichier_entree=path_actions + "\\lose.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
-        for i in range(15):
+        for i in range(attaques):
             LecteurPosition(fichier_entree=path_actions + "\\attaque_lucas_.json").rejouer()
             time.sleep(3)
             LecteurPosition(fichier_entree=path_actions + "\\cliclefttop.json").rejouer()
 
-        OCR().upgrade_wall()
+        # OCR().upgrade_wall()

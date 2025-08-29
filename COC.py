@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import unicodedata
-from rapidfuzz import fuzz
 import requests
 import random
 import string
@@ -15,10 +14,9 @@ from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import matplotlib.pyplot as plt
 import pytesseract
-import cv2
-import numpy as np
-from PIL import Image
 from pathlib import Path
+import PlayActions
+
 
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -323,5 +321,6 @@ def spy_my_clan(clan_tag='#2R2YVCLJQ'):
     plot_trophies_evolution("EPF_Players.xlsx", players_to_plot=["P’tit Lulu", "shamim™", "FrysT"])
 
 
+PlayActions.attaque_with_all_accounts(defaites=8, attaques=22)
 invite(200, 50, inviting=True, condition=True)
 spy_my_clan()
