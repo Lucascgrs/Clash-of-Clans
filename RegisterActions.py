@@ -145,5 +145,5 @@ class EnregistreurPosition:
 
 if __name__ == "__main__":
     time.sleep(3)
-    enregistreur = EnregistreurPosition(fichier_sortie="C:\\Users\\lucas\\PycharmProjects\\PROJECT\\Clash Of Clans\\Actions\\ameliorerrempartelexir.json")
+    enregistreur = EnregistreurPosition(fichier_sortie="C:\\Users\\lucas\\PycharmProjects\\PROJECT\\Clash Of Clans\\Actions\\attaquehdv13+4heros.json")
     enregistreur.demarrer_enregistrement()

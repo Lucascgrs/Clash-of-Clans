@@ -22,7 +22,7 @@ import PlayActions
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 sys.stdout.reconfigure(encoding='utf-8')
 
-API_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6Ijg0Yjk0Y2Y4LWQ5OTQtNDBlZi1iOTA0LTRiZDdmNWNiYjZmMCIsImlhdCI6MTc1NjM1MjE5OSwic3ViIjoiZGV2ZWxvcGVyLzUwNzVhOTk1LTI5NWUtNTZiMS0yZTQ2LWY0YmMyNTgxN2QwMyIsInNjb3BlcyI6WyJjbGFzaCJdLCJsaW1pdHMiOlt7InRpZXIiOiJkZXZlbG9wZXIvc2lsdmVyIiwidHlwZSI6InRocm90dGxpbmcifSx7ImNpZHJzIjpbIjkyLjE4NC4xMDYuMTc2Il0sInR5cGUiOiJjbGllbnQifV19.gy2p-RYZPehkdzH2kugY2EC-KMTMaaRVldesjLjwhwQzoqdTQVYcs9LOLrZhq1cKXeq9hGOlJLRkmtes36RLqw"
+API_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjlkYjU5YWJhLWUzZDctNGUxMS04MWQ3LWYwMGUwODA0NWNlNiIsImlhdCI6MTc1Nzc4NzAyMiwic3ViIjoiZGV2ZWxvcGVyLzUwNzVhOTk1LTI5NWUtNTZiMS0yZTQ2LWY0YmMyNTgxN2QwMyIsInNjb3BlcyI6WyJjbGFzaCJdLCJsaW1pdHMiOlt7InRpZXIiOiJkZXZlbG9wZXIvc2lsdmVyIiwidHlwZSI6InRocm90dGxpbmcifSx7ImNpZHJzIjpbIjkyLjE2Ny45MC4yOSJdLCJ0eXBlIjoiY2xpZW50In1dfQ.oSUcPmTHo5zNmldSvXg3prDANLa_tZfQkHpmtlpKfE3Jnj1sp_cQ86nnJWeTDqgO7R8nByPBy0XolP7GyfuYng"
 HEADERS = {
     "Authorization": f"Bearer {API_TOKEN}",
     "Accept": "application/json"
@@ -67,6 +67,7 @@ def random_clan_search(limit: int) -> list:
 
 
 def get_clan_members(clan_tag, token, condition=True):
+
     CLAN_TAG = clan_tag.replace('#', '%23')
     url = f"https://api.clashofclans.com/v1/clans/{CLAN_TAG}/members"
 
@@ -77,24 +78,19 @@ def get_clan_members(clan_tag, token, condition=True):
     player_info_dict = {}
 
     response = requests.get(url, headers=headers)
+
     if response.status_code == 200:
         data = response.json()
         members = data.get("items", [])
 
         for member in members:
             tag = member['tag']
-            player_url = f"https://api.clashofclans.com/v1/players/{tag.replace('#', '%23')}"
-            player_response = requests.get(player_url, headers=headers)
 
-            if player_response.status_code != 200:
-                continue
-
-            player_data = player_response.json()
-            rank = player_data.get('league', {}).get('name', 'Unranked')
+            rank = member.get('league', {}).get('name', 'Unranked')
             trophies = member.get('trophies', 0)
             player_info = {}
 
-            if 2700 <= trophies <= 5000 and rank != 'Unranked' and int(member.get('townHallLevel', 'N/A')) >= 13 and (member['donations'] > 0 or member['donationsReceived'] > 0) and condition:
+            if 2000 <= trophies <= 4300 and rank != 'Unranked' and int(member.get('townHallLevel', 'N/A')) >= 12 and (member['donations'] > 0 or member['donationsReceived'] > 0) and condition:
                 player_info = {
                     "name": member['name'],
                     "role": member['role'],
@@ -117,21 +113,42 @@ def get_clan_members(clan_tag, token, condition=True):
                 }
                 player_info_dict[tag] = player_info
     else:
-        print(f"Erreur ici {response.status_code}: {response.text}")
+        raise Exception("")
+        #print(f"Erreur ici {response.status_code}: {response.text}")
 
     return player_info_dict
 
 
 def get_all_clan_members_threadpool(clan_tags, token, max_workers=50, condition=True):
     results = []
+    total_clans = len(clan_tags)
+    successful_clans = 0
+    failed_clans = 0
+
+    print(f"Début de la collecte des membres pour {total_clans} clans...")
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(get_clan_members, tag, token, condition): tag for tag in clan_tags}
-        for future in tqdm(as_completed(futures), total=len(futures), desc="Collecte membres"):
+
+        for future in as_completed(futures):
+            clan_tag = futures[future]
             try:
                 result = future.result()
                 results.append(result)
+
+                # Update success counter
+                successful_clans += 1
+                # Print progress on the same line
+                print(f"Progression: {successful_clans + failed_clans}/{total_clans} clans traités | Réussis: {successful_clans} | Échoués: {failed_clans}", end="\r", flush=True)
+
             except Exception as e:
-                print(f"Erreur avec un clan : {e}")
+                # Update failed counter
+                failed_clans += 1
+                print(f"\nErreur avec le clan {clan_tag}: {e}")
+                print(f"Progression: {successful_clans + failed_clans}/{total_clans} clans traités | Réussis: {successful_clans} | Échoués: {failed_clans}", end="\r", flush=True)
+
+    # Final summary with newline
+    print(f"\nCollecte terminée! Clans réussis: {successful_clans} | Clans échoués: {failed_clans}")
     return results
 
 
@@ -269,7 +286,7 @@ def save_tags_to_txt(tags, filepath="player_tags.txt"):
 
 
 def automate_coc_input(text_to_paste: str):
-    def wait(): time.sleep(random.uniform(1, 2))
+    def wait(): time.sleep(random.uniform(0.5, 1))
     coords = [(75, 62), (1438, 91), (1450, 200), (836, 306), (700, 570), (1, 1)]
 
     for x, y in coords[:4]:
@@ -287,21 +304,22 @@ def automate_coc_input(text_to_paste: str):
 
 # --- MAIN ---
 
-def invite(different_name=10, nb_of_clan_with_the_same_name=10, inviting=True, condition=True):
-    l_clans = []
-    for _ in tqdm(range(different_name), desc="Recherche de clans"):
-        l_clans.extend(random_clan_search(nb_of_clan_with_the_same_name))
+def invite(different_name=10, nb_of_clan_with_the_same_name=10, inviting=True, condition=True, searching_players=True):
+    if searching_players:
+        l_clans = []
+        for _ in tqdm(range(different_name), desc="Recherche de clans"):
+            l_clans.extend(random_clan_search(nb_of_clan_with_the_same_name))
 
-    l_player_data = get_all_clan_members_threadpool(l_clans, API_TOKEN, condition=condition)
-    player_tags = list({tag for d in l_player_data for tag in d.keys()})
-    save_to_excel(l_player_data, file_name="All_Players.xlsx")
+        l_player_data = get_all_clan_members_threadpool(l_clans, API_TOKEN, condition=condition)
+        player_tags = list({tag for d in l_player_data for tag in d.keys()})
+        save_to_excel(l_player_data, file_name="All_Players.xlsx")
 
-    if inviting:
-        print(f"\n{len(player_tags)} joueur(s) à inviter ...")
         save_tags_to_txt(player_tags)
 
+    if inviting:
         tags_file = Path("player_tags.txt")
         tags = read_tags_from_txt(tags_file)
+        print(f"\n{len(tags)} joueur(s) à inviter ...")
         processed = 0
         for tag in tqdm(tags.copy(), desc="Invitation auto"):
             automate_coc_input(tag)
@@ -321,6 +339,10 @@ def spy_my_clan(clan_tag='#2R2YVCLJQ'):
     plot_trophies_evolution("EPF_Players.xlsx", players_to_plot=["P’tit Lulu", "shamim™", "FrysT"])
 
 
-PlayActions.attaque_with_all_accounts(defaites=8, attaques=22)
-invite(200, 50, inviting=True, condition=True)
-spy_my_clan()
+PlayActions.attaque_with_all_accounts(defaites=0, attaques=20, attaques_night=0, allow_tilu=False, allow_ptitlulu=True, allow_lucas=False, allow_citeor=False)
+PlayActions.LecteurPosition(fichier_entree="switchptitlulu.json").rejouer()
+time.sleep(3)
+PlayActions.LecteurPosition(fichier_entree="cliclefttop.json").rejouer()
+
+invite(500, 50, inviting=True, condition=True, searching_players=False)
+#spy_my_clan()
