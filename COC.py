@@ -22,7 +22,7 @@ import PlayActions
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 sys.stdout.reconfigure(encoding='utf-8')
 
-API_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjlkYjU5YWJhLWUzZDctNGUxMS04MWQ3LWYwMGUwODA0NWNlNiIsImlhdCI6MTc1Nzc4NzAyMiwic3ViIjoiZGV2ZWxvcGVyLzUwNzVhOTk1LTI5NWUtNTZiMS0yZTQ2LWY0YmMyNTgxN2QwMyIsInNjb3BlcyI6WyJjbGFzaCJdLCJsaW1pdHMiOlt7InRpZXIiOiJkZXZlbG9wZXIvc2lsdmVyIiwidHlwZSI6InRocm90dGxpbmcifSx7ImNpZHJzIjpbIjkyLjE2Ny45MC4yOSJdLCJ0eXBlIjoiY2xpZW50In1dfQ.oSUcPmTHo5zNmldSvXg3prDANLa_tZfQkHpmtlpKfE3Jnj1sp_cQ86nnJWeTDqgO7R8nByPBy0XolP7GyfuYng"
+API_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjRlZTk4ZGJlLTBiMzgtNGJjNC05ODQxLTk3NTE4NjhmYWYyMCIsImlhdCI6MTc2MjQ0NTM1Niwic3ViIjoiZGV2ZWxvcGVyLzUwNzVhOTk1LTI5NWUtNTZiMS0yZTQ2LWY0YmMyNTgxN2QwMyIsInNjb3BlcyI6WyJjbGFzaCJdLCJsaW1pdHMiOlt7InRpZXIiOiJkZXZlbG9wZXIvc2lsdmVyIiwidHlwZSI6InRocm90dGxpbmcifSx7ImNpZHJzIjpbIjAuMC4wLjAiXSwidHlwZSI6ImNsaWVudCJ9XX0.CfHE03xcQOESew1TLdqWu_Ukgg1a8899tELrywtjcYqvXNW4UqcOn-GUOtHwKoUN7WmZmT9PMW7O_kYagXyUrQ"
 HEADERS = {
     "Authorization": f"Bearer {API_TOKEN}",
     "Accept": "application/json"
@@ -90,7 +90,7 @@ def get_clan_members(clan_tag, token, condition=True):
             trophies = member.get('trophies', 0)
             player_info = {}
 
-            if 2000 <= trophies <= 4300 and rank != 'Unranked' and int(member.get('townHallLevel', 'N/A')) >= 12 and (member['donations'] > 0 or member['donationsReceived'] > 0) and condition:
+            if 0 < trophies <= 1000 and rank != 'Unranked' and int(member.get('townHallLevel', 'N/A')) >= 13 and (member['donations'] > 0 or member['donationsReceived'] > 0) and condition:
                 player_info = {
                     "name": member['name'],
                     "role": member['role'],
@@ -139,13 +139,13 @@ def get_all_clan_members_threadpool(clan_tags, token, max_workers=50, condition=
                 # Update success counter
                 successful_clans += 1
                 # Print progress on the same line
-                print(f"Progression: {successful_clans + failed_clans}/{total_clans} clans traités | Réussis: {successful_clans} | Échoués: {failed_clans}", end="\r", flush=True)
+                print(f"Progression: {successful_clans + failed_clans}/{total_clans} clans traités | Réussis: {successful_clans} | Échoués: {failed_clans}")
 
             except Exception as e:
                 # Update failed counter
                 failed_clans += 1
                 print(f"\nErreur avec le clan {clan_tag}: {e}")
-                print(f"Progression: {successful_clans + failed_clans}/{total_clans} clans traités | Réussis: {successful_clans} | Échoués: {failed_clans}", end="\r", flush=True)
+                print(f"Progression: {successful_clans + failed_clans}/{total_clans} clans traités | Réussis: {successful_clans} | Échoués: {failed_clans}")
 
     # Final summary with newline
     print(f"\nCollecte terminée! Clans réussis: {successful_clans} | Clans échoués: {failed_clans}")
@@ -339,10 +339,10 @@ def spy_my_clan(clan_tag='#2R2YVCLJQ'):
     plot_trophies_evolution("EPF_Players.xlsx", players_to_plot=["P’tit Lulu", "shamim™", "FrysT"])
 
 
-PlayActions.attaque_with_all_accounts(defaites=0, attaques=20, attaques_night=0, allow_tilu=False, allow_ptitlulu=True, allow_lucas=False, allow_citeor=False)
-PlayActions.LecteurPosition(fichier_entree="switchptitlulu.json").rejouer()
-time.sleep(3)
-PlayActions.LecteurPosition(fichier_entree="cliclefttop.json").rejouer()
+#PlayActions.attaque_with_all_accounts(defaites=0, attaques=20, attaques_night=0, allow_tilu=False, allow_ptitlulu=True, allow_lucas=False, allow_citeor=False)
+#PlayActions.LecteurPosition(fichier_entree="switchptitlulu.json").rejouer()
+#time.sleep(3)
+#PlayActions.LecteurPosition(fichier_entree="cliclefttop.json").rejouer()
 
-invite(500, 50, inviting=True, condition=True, searching_players=False)
-#spy_my_clan()
+invite(10, 50, inviting=False, condition=True, searching_players=True)
+spy_my_clan()
