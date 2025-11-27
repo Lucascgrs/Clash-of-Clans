@@ -188,22 +188,26 @@ def automate_coc_input(text: str):
     def wait(): time.sleep(random.uniform(0.5, 1))
 
     coords = {
-        "chat": (75, 62),
+        "chat": (75, 62),#J22YGJ98
+
         "search_btn": (1438, 91),
         "input_zone": (1450, 200),
-        "send_btn": (700, 570),
-        "escape": (1, 1)
+        "send_btn": (1100, 570),
+        "escape": (5, 5),
+        "fill": (1100, 300),
+        "invite": (600, 570)
     }
 
     pyautogui.click(*coords["chat"]); wait()
     pyautogui.click(*coords["search_btn"]); wait()
     pyautogui.click(*coords["input_zone"]); wait()
+    pyautogui.click(*coords["fill"]);wait()
 
     pyperclip.copy(text)
     pyautogui.hotkey("ctrl", "v"); wait()
     pyautogui.press("enter"); wait()
 
-    pyautogui.click(*coords["send_btn"]); wait()
+    pyautogui.click(*coords["invite"]); wait()
     pyautogui.click(*coords["escape"])
 
 
@@ -329,5 +333,7 @@ def spy_my_clan(clan_tag="#2R2YVCLJQ"):
 # --- EXECUTION ---
 
 if __name__ == "__main__":
-    invite(1000, 50, inviting=False, condition=True, searching_players=True)
-    spy_my_clan()
+    import PlayActions
+    PlayActions.attaque_with_all_accounts(0, 10, 0, False, True, False, False)
+    invite(1000, 50, inviting=True, condition=True, searching_players=False)
+
